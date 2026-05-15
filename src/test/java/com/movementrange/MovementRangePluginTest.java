@@ -1,13 +1,13 @@
-package com.example;
+package com.movementrange;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
-public class ExamplePluginTest
+public class MovementRangePluginTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(ExamplePlugin.class);
+		ExternalPluginManager.loadBuiltin(MovementRangePlugin.class);
 		RuneLite.main(args);
 	}
 }
