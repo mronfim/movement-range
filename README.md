@@ -1,4 +1,4 @@
-# Movement Range
+<h1><img src="icon.png" alt="" align="left" width="48" />&nbsp;Movement Range</h1>
 
 Highlights the tiles you can reach in a configurable number of run ticks, with optional per-tier coloring.
 

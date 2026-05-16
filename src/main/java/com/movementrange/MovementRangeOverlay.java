@@ -1,3 +1,27 @@
+/*
+ * Copyright (c) 2026, mronfim
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.movementrange;
 
 import net.runelite.api.Client;
@@ -29,11 +53,12 @@ import java.util.Set;
 
 public class MovementRangeOverlay extends Overlay {
 
-    private enum TileSide { NORTH, EAST, SOUTH, WEST }
+    enum TileSide { NORTH, EAST, SOUTH, WEST }
     private static final int MAX_TICKS = 3;
 
     private final Client client;
     private final MovementRangeConfig config;
+    private Map<WorldPoint, Integer> cachedTiles;
 
     @Inject
     private MovementRangeOverlay(Client client, MovementRangeConfig config) {
@@ -43,6 +68,10 @@ public class MovementRangeOverlay extends Overlay {
         setLayer(OverlayLayer.ABOVE_SCENE);
     }
 
+    void invalidateCache() {
+        cachedTiles = null;
+    }
+
     @Override
     public Dimension render(Graphics2D graphics) {
         if (client.getGameState() != GameState.LOGGED_IN) return null;
@@ -50,7 +79,11 @@ public class MovementRangeOverlay extends Overlay {
         Player player = client.getLocalPlayer();
         if (player == null) return null;
 
-        Map<WorldPoint, Integer> tiles = computeReachableByTier(config.maxTicks());
+        Map<WorldPoint, Integer> tiles = cachedTiles;
+        if (tiles == null) {
+            tiles = computeReachableByTier(config.maxTicks());
+            cachedTiles = tiles;
+        }
 
         for (Map.Entry<WorldPoint, Integer> entry : tiles.entrySet()) {
             int tier = entry.getValue();
@@ -117,7 +150,7 @@ public class MovementRangeOverlay extends Overlay {
         return tierOf;
     }
 
-    private Set<TileSide> perimeterSides(WorldPoint tile, Map<WorldPoint, Integer> tierOf) {
+    static Set<TileSide> perimeterSides(WorldPoint tile, Map<WorldPoint, Integer> tierOf) {
         int myTier = tierOf.get(tile);
         int plane = tile.getPlane();
         EnumSet<TileSide> sides = EnumSet.noneOf(TileSide.class);
@@ -169,13 +202,13 @@ public class MovementRangeOverlay extends Overlay {
     }
 
 
-    private boolean isOutward(Map<WorldPoint, Integer> tierOf, WorldPoint wp, int myTier) {
+    static boolean isOutward(Map<WorldPoint, Integer> tierOf, WorldPoint wp, int myTier) {
         Integer t = tierOf.get(wp);
         if (t == null) return true;
         return effectiveTier(t) > myTier;
     }
 
-    private static int effectiveTier(int tier) {
+    static int effectiveTier(int tier) {
         return Math.max(tier, 1);   // player tile (tier 0) treated as tier 1 for boundaries
     }
 

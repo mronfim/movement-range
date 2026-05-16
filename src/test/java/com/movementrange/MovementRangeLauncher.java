@@ -24,61 +24,14 @@
  */
 package com.movementrange;
 
-import com.google.inject.Provides;
-import javax.inject.Inject;
+import net.runelite.client.RuneLite;
+import net.runelite.client.externalplugins.ExternalPluginManager;
 
-import net.runelite.api.events.GameTick;
-import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.overlay.OverlayManager;
-
-@PluginDescriptor(
-	name = "Movement Range",
-	description = "Highlights tiles reachable in 1–3 run ticks from the player.",
-	tags = {"tile", "marker", "ground", "highlight", "overlay"}
-)
-public class MovementRangePlugin extends Plugin
+public class MovementRangeLauncher
 {
-	@Inject
-	private OverlayManager overlayManager;
-
-	@Inject
-	private MovementRangeOverlay overlay;
-
-	@Override
-	protected void startUp() throws Exception
+	public static void main(String[] args) throws Exception
 	{
-		overlayManager.add(overlay);
-	}
-
-	@Override
-	protected void shutDown() throws Exception
-	{
-		overlayManager.remove(overlay);
-		overlay.invalidateCache();
-	}
-
-	@Subscribe
-	public void onGameTick(GameTick event)
-	{
-		overlay.invalidateCache();
-	}
-
-	@Subscribe
-	public void onConfigChanged(ConfigChanged event)
-	{
-		if (MovementRangeConfig.GROUP.equals(event.getGroup()))
-		{
-			overlay.invalidateCache();
-		}
-	}
-
-	@Provides
-	MovementRangeConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(MovementRangeConfig.class);
+		ExternalPluginManager.loadBuiltin(MovementRangePlugin.class);
+		RuneLite.main(args);
 	}
 }
