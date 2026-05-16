@@ -14,7 +14,7 @@ repositories {
 }
 
 def runeLiteVersion = 'latest.release'
-def pluginMainClass = 'com.movementrange.MovementRangePluginTest'
+def pluginMainClass = 'com.movementrange.MovementRangeLauncher'
 
 dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
@@ -32,6 +32,15 @@ group = 'com.movementrange'
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'
 	options.release.set(11)
+}
+
+tasks.named('test', Test) {
+	useJUnit()
+	testLogging {
+		events 'passed', 'failed', 'skipped'
+		exceptionFormat = 'full'
+		showStandardStreams = true
+	}
 }
 
 tasks.register('run', JavaExec) {
