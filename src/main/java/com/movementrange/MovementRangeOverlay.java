@@ -1,19 +1,35 @@
 package com.movementrange;
 
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.GameState;
+import net.runelite.api.Perspective;
+import net.runelite.api.Player;
+import net.runelite.api.WorldView;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.client.ui.overlay.*;
+import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPosition;
 
 import javax.inject.Inject;
-import java.awt.*;
-import java.util.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.awt.Stroke;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class MovementRangeOverlay extends Overlay {
 
-    public enum TileSide { NORTH, EAST, SOUTH, WEST }
+    private enum TileSide { NORTH, EAST, SOUTH, WEST }
     private static final int MAX_TICKS = 3;
 
     private final Client client;
@@ -29,6 +45,8 @@ public class MovementRangeOverlay extends Overlay {
 
     @Override
     public Dimension render(Graphics2D graphics) {
+        if (client.getGameState() != GameState.LOGGED_IN) return null;
+
         Player player = client.getLocalPlayer();
         if (player == null) return null;
 
@@ -162,12 +180,14 @@ public class MovementRangeOverlay extends Overlay {
     }
 
     private double borderWidthForTier(int tier) {
+        double width;
         switch (tier) {
-            case 1: return config.tier1BorderWidth();
-            case 2: return config.tier2BorderWidth();
-            case 3: return config.tier3BorderWidth();
-            default: return config.tier1BorderWidth();
+            case 2:  width = config.tier2BorderWidth(); break;
+            case 3:  width = config.tier3BorderWidth(); break;
+            case 1:
+            default: width = config.tier1BorderWidth(); break;
         }
+        return Math.max(0, width);  // BasicStroke throws on negative width
     }
 
     private Color fillForTier(int tier) {

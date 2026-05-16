@@ -1,46 +1,92 @@
 package com.movementrange;
 
-import net.runelite.client.config.*;
+import net.runelite.client.config.Alpha;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.Range;
 
-import java.awt.*;
+import java.awt.Color;
 
 @ConfigGroup("movementrangeindicators")
 public interface MovementRangeConfig extends Config
 {
+	@ConfigSection(
+			name = "General",
+			description = "General settings",
+			position = 0
+	)
+	String generalSection = "generalSection";
+
+	@ConfigSection(
+			name = "Tier 1 (1 tick)",
+			description = "Appearance for tiles reachable in 1 tick",
+			position = 1
+	)
+	String tier1Section = "tier1Section";
+
+	@ConfigSection(
+			name = "Tier 2 (2 ticks)",
+			description = "Appearance for tiles reachable in 2 ticks",
+			position = 2,
+			closedByDefault = true
+	)
+	String tier2Section = "tier2Section";
+
+	@ConfigSection(
+			name = "Tier 3 (3 ticks)",
+			description = "Appearance for tiles reachable in 3 ticks",
+			position = 3,
+			closedByDefault = true
+	)
+	String tier3Section = "tier3Section";
+
 	@ConfigItem(
 			keyName = "highlightIndividualTiles",
 			name = "Highlight individual tiles",
-			description = "Highlights individual tiles within the reachable movement grid"
+			description = "Highlights individual tiles within the reachable movement grid",
+			position = 0,
+			section = generalSection
 	)
 	default boolean highlightIndividualTiles() { return false; }
 
 	@ConfigItem(
 			keyName = "onlyWalkableTiles",
 			name = "Only walkable tiles",
-			description = "Only highlight tiles that are walkable"
+			description = "Only highlight tiles that are walkable",
+			position = 1,
+			section = generalSection
 	)
-	default boolean onlyWalkableTiles() { return false; }
+	default boolean onlyWalkableTiles() { return true; }
 
 	@Range(min = 1, max = 3)
 	@ConfigItem(
 			keyName = "maxTicks",
 			name = "Max Ticks",
-			description = "Number of run-mode ticks to highlight reachable tiles for"
+			description = "Number of run-mode ticks to highlight reachable tiles for",
+			position = 2,
+			section = generalSection
 	)
 	default int maxTicks() { return 1; }
 
+	@Range(min = 0, max = 10)
 	@ConfigItem(
 			keyName = "tier1BorderWidth",
-			name = "Tier 1 border width",
-			description = "Width of the tile marker border within 1 tick"
+			name = "Border width",
+			description = "Width of the tile marker border within 1 tick",
+			position = 0,
+			section = tier1Section
 	)
 	default double tier1BorderWidth() { return 2; }
 
 	@Alpha
 	@ConfigItem(
 			keyName = "tier1FillColor",
-			name = "Tier 1 fill color",
-			description = "Color for tiles within 1 tick"
+			name = "Fill color",
+			description = "Color for tiles within 1 tick",
+			position = 1,
+			section = tier1Section
 	)
 	default Color tier1FillColor()
 	{
@@ -50,27 +96,33 @@ public interface MovementRangeConfig extends Config
 	@Alpha
 	@ConfigItem(
 			keyName = "tier1PerimeterColor",
-			name = "Tier 1 perimeter color",
-			description = "Color for tile perimeter around tiles within 1 tick"
+			name = "Perimeter color",
+			description = "Color for tile perimeter around tiles within 1 tick",
+			position = 2,
+			section = tier1Section
 	)
 	default Color tier1PerimeterColor()
 	{
 		return Color.CYAN;
 	}
 
-
+	@Range(min = 0, max = 10)
 	@ConfigItem(
 			keyName = "tier2BorderWidth",
-			name = "Tier 2 border width",
-			description = "Width of the tile marker border within 2 ticks"
+			name = "Border width",
+			description = "Width of the tile marker border within 2 ticks",
+			position = 0,
+			section = tier2Section
 	)
 	default double tier2BorderWidth() { return 2; }
 
 	@Alpha
 	@ConfigItem(
 			keyName = "tier2FillColor",
-			name = "Tier 2 fill color",
-			description = "Color for tiles within 2 ticks"
+			name = "Fill color",
+			description = "Color for tiles within 2 ticks",
+			position = 1,
+			section = tier2Section
 	)
 	default Color tier2FillColor()
 	{
@@ -80,27 +132,33 @@ public interface MovementRangeConfig extends Config
 	@Alpha
 	@ConfigItem(
 			keyName = "tier2PerimeterColor",
-			name = "Tier 2 perimeter color",
-			description = "Color for tile perimeter around tiles within 2 ticks"
+			name = "Perimeter color",
+			description = "Color for tile perimeter around tiles within 2 ticks",
+			position = 2,
+			section = tier2Section
 	)
 	default Color tier2PerimeterColor()
 	{
-		return Color.CYAN;
+		return Color.YELLOW;
 	}
 
-
+	@Range(min = 0, max = 10)
 	@ConfigItem(
 			keyName = "tier3BorderWidth",
-			name = "Tier 3 border width",
-			description = "Width of the tile marker border within 3 ticks"
+			name = "Border width",
+			description = "Width of the tile marker border within 3 ticks",
+			position = 0,
+			section = tier3Section
 	)
 	default double tier3BorderWidth() { return 2; }
 
 	@Alpha
 	@ConfigItem(
 			keyName = "tier3FillColor",
-			name = "Tier 3 fill color",
-			description = "Color for tiles within 3 ticks"
+			name = "Fill color",
+			description = "Color for tiles within 3 ticks",
+			position = 1,
+			section = tier3Section
 	)
 	default Color tier3FillColor()
 	{
@@ -110,11 +168,13 @@ public interface MovementRangeConfig extends Config
 	@Alpha
 	@ConfigItem(
 			keyName = "tier3PerimeterColor",
-			name = "Tier 3 perimeter color",
-			description = "Color for tile perimeter around tiles within 3 ticks"
+			name = "Perimeter color",
+			description = "Color for tile perimeter around tiles within 3 ticks",
+			position = 2,
+			section = tier3Section
 	)
 	default Color tier3PerimeterColor()
 	{
-		return Color.CYAN;
+		return Color.ORANGE;
 	}
 }
